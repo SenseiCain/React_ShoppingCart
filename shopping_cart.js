@@ -263,8 +263,21 @@ class CheckOut extends React.Component {
   render(){
     return(
       <div id="checkout-container">
-        <div id="back-button-container">
-          <button id="back-button" onClick={this.props.applicationScreenSwitch.bind(this, 2)}>Back</button>
+        <div id="checkout-container-wrapper">
+          <div id="checkout-container-inside">
+            <div id="back-button-container">
+            <button className="checkout-button" onClick={this.props.applicationScreenSwitch.bind(this, 2)}>Back</button>
+            </div>
+            <div id="shoppingcart-list-container"></div>
+            <div id="shoppingcart-checkout-container">
+              <div id="shoppingcart-total">
+                <h2>Total: </h2>
+              </div>
+              <div id="shoppingcart-checkout-button">
+                <button className="checkout-button">Check Out</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )
