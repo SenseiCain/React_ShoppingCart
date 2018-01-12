@@ -151,9 +151,10 @@ class Products extends React.Component {
   
   render(){
     
+    //CREATE PRODUCT CARDS
     var productElements = Object.keys(products).map((key, i) => {
       return(
-        <ProductCard key={i} value={i} name={products[i].name} productsPrice={products[i].price} productsIsClicked={this.props.applicationIsClicked} productsClick={this.props.applicationClick} productsClickedIndex={this.props.applicationClickedIndex} background={products[i].url}/>
+        <ProductCard key={i} value={i} name={products[i].name} productsPrice={products[i].price} productsIsClicked={this.props.orderScreenIsClicked} productsClick={this.props.orderScreenClick} productsClickedIndex={this.props.orderScreenClickedIndex} background={products[i].url}/>
       );
     });
     
@@ -178,13 +179,16 @@ class ShoppingCart extends React.Component {
           <h3>Gross: {grossFormat}</h3>
           <h3>Tax: {taxFormat}</h3>
           <h2>Total: {totalFormat}</h2>
+          <div id="checkout-button-container">
+            <button id="checkout-button" onClick={this.props.orderScreenSwitch.bind(this, 1)}>Check Out</button>
+          </div>
         </div>
       </div>
     );
   }
 }
 
-class Application extends React.Component {
+class OrderScreen extends React.Component {
   constructor(){
     super();
     this.state = {
@@ -246,11 +250,62 @@ class Application extends React.Component {
   
   render(){
     return(
-      <div id="app-container">
-        <Products applicationIsClicked={this.state.clicked} applicationClick={this.applicationClick} applicationClickedIndex={this.state.clickedIndex}/>
-        <ShoppingCart />
+      <div id="order-container" className={this.props.applicationClass}>
+        <Products orderScreenIsClicked={this.state.clicked} orderScreenClick={this.applicationClick} orderScreenClickedIndex={this.state.clickedIndex}/>
+        <ShoppingCart orderScreenSwitch={this.props.applicationScreenSwitch}/>
       </div>
     );
+  }
+}
+
+//SHOPPING CART - CHECK OUT
+class CheckOut extends React.Component {
+  render(){
+    return(
+      <div id="checkout-container">
+        <div id="back-button-container">
+          <button id="back-button" onClick={this.props.applicationScreenSwitch.bind(this, 2)}>Back</button>
+        </div>
+      </div>
+    )
+  }
+}
+
+//SHOPPING CART - APP
+class Application extends React.Component {
+  constructor(){
+    super();
+    this.state = {
+      orderFade: '',
+      containerSlide: ''
+    }
+    
+    this.screenSwitch = this.screenSwitch.bind(this);
+  }
+  
+  screenSwitch(x){
+    if(x == 1){
+      this.setState({
+        orderFade: 'order-container-fade',
+        containerSlide: 'screen-swipe'
+      })
+    }if(x == 2){
+      this.setState({
+        orderFade: '',
+        containerSlide: ''
+      })
+    }
+  }
+  
+  render(){
+    return(
+      <div id="app-container">
+        <div id="app-container-inside" className={this.state.containerSlide}>
+          <OrderScreen applicationScreenSwitch={this.screenSwitch} applicationClass={this.state.orderFade}/>
+          <CheckOut applicationScreenSwitch={this.screenSwitch}/>
+        </div>
+      </div>
+    )
   }
 }
 
