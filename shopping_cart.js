@@ -189,14 +189,110 @@ class ShoppingCart extends React.Component {
 }
 
 class OrderScreen extends React.Component {
+  
+  
+  
+  render(){
+    return(
+      <div id="order-container" className={this.props.applicationClass}>
+        <Products orderScreenIsClicked={this.props.applicationClicked} orderScreenClick={this.props.applicationClick} orderScreenClickedIndex={this.props.applicationClickedIndex}/>
+        <ShoppingCart orderScreenSwitch={this.props.applicationScreenSwitch}/>
+      </div>
+    );
+  }
+}
+
+//SHOPPING CART - CHECK OUT
+class ItemRow extends React.Component {
+  render(){
+    var index = this.props.checkOutIndex;
+    
+    return(
+      <tr>
+        <td data-title="name">{this.props.checkOutName}</td>
+        <td data-title="size">{this.props.checkOutSize}</td>
+        <td data-title="price">{this.props.checkOutPrice}</td>
+        <td className="td-remove" data-title="remove">
+          <button className="remove-button" onClick={this.props.checkOutRemoveClick.bind(this, index)}>-</button>
+        </td>
+      </tr>
+    )
+  }
+}
+
+class CheckOut extends React.Component {
+  render(){
+    var tableRows = Object.keys(itemsArray).map((key, i) => {
+      
+      return(<ItemRow checkOutName={itemsArray[i].itemType} checkOutSize={itemsArray[i].size.charAt(0)} checkOutPrice={itemsArray[i].price} checkOutIndex={i} checkOutRemoveClick={this.props.applicationRemoveClick}/>)
+    })
+    
+    return(
+      <div id="checkout-container">
+        <div id="checkout-container-wrapper">
+          <div id="checkout-container-inside">
+            <div id="back-button-container">
+            <button className="checkout-button" onClick={this.props.applicationScreenSwitch.bind(this, 2)}>Back</button>
+            </div>
+            <div id="shoppingcart-list-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Size</th>
+                    <th>Price</th>
+                    <th>Remove</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tableRows}
+                </tbody>
+              </table>
+            </div>
+            <div id="shoppingcart-checkout-container">
+              <div id="shoppingcart-total">
+                <h2>Total: {totalFormat}</h2>
+              </div>
+              <div id="shoppingcart-checkout-button">
+                <button className="checkout-button">Check Out</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
+//SHOPPING CART - APP
+class Application extends React.Component {
   constructor(){
     super();
     this.state = {
-      clicked: 0,
-      clickedIndex: null
+      orderFade: '',
+      containerSlide: '',
+      clickedIndex: null,
+      items: null
     }
     
-    this.applicationClick = this.applicationClick.bind(this)
+    this.screenSwitch = this.screenSwitch.bind(this);
+    this.applicationClick = this.applicationClick.bind(this);
+    this.removeClick = this.removeClick.bind(this);
+  }
+  
+  //SCREEN SWITCH ANIMATION
+  screenSwitch(x){
+    if(x == 1){
+      this.setState({
+        orderFade: 'order-container-fade',
+        containerSlide: 'screen-swipe'
+      })
+    }if(x == 2){
+      this.setState({
+        orderFade: '',
+        containerSlide: ''
+      })
+    }
   }
   
   //UPDATES UI ON ADD BUTTON CLICK
@@ -249,109 +345,30 @@ class OrderScreen extends React.Component {
     
   }
   
-  render(){
-    return(
-      <div id="order-container" className={this.props.applicationClass}>
-        <Products orderScreenIsClicked={this.state.clicked} orderScreenClick={this.applicationClick} orderScreenClickedIndex={this.state.clickedIndex}/>
-        <ShoppingCart orderScreenSwitch={this.props.applicationScreenSwitch}/>
-      </div>
-    );
-  }
-}
-
-//SHOPPING CART - CHECK OUT
-class ItemRow extends React.Component {
-  render(){
-    return(
-      <tr>
-        <td data-title="name">{this.props.checkOutName}</td>
-        <td data-title="size">{this.props.checkOutSize}</td>
-        <td data-title="price">{this.props.checkOutPrice}</td>
-        <td data-title="remove">
-          <button class="remove-button">-</button>
-        </td>
-      </tr>
-    )
-  }
-}
-
-class CheckOut extends React.Component {
-  render(){
-    var tableRows = Object.keys(itemsArray).map((key, i) => {
-      console.log(itemsArray);
-      
-      return(<ItemRow checkOutName={itemsArray[i].itemType} checkOutSize={itemsArray[i].size.charAt(0)} checkOutPrice={itemsArray[i].price}/>)
-    })
+  //REMOVE ITEMS IN CHECK OUT
+  removeClick(index){
+    //REMOVE ITEM INFO
+    gross = gross - itemsArray[index].price;
+    tax = gross * .0825;
+    total = gross + tax;
     
-    return(
-      <div id="checkout-container">
-        <div id="checkout-container-wrapper">
-          <div id="checkout-container-inside">
-            <div id="back-button-container">
-            <button className="checkout-button" onClick={this.props.applicationScreenSwitch.bind(this, 2)}>Back</button>
-            </div>
-            <div id="shoppingcart-list-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Item</th>
-                    <th>Size</th>
-                    <th>Price</th>
-                    <th>Remove</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tableRows}
-                </tbody>
-              </table>
-            </div>
-            <div id="shoppingcart-checkout-container">
-              <div id="shoppingcart-total">
-                <h2>Total: {totalFormat}</h2>
-              </div>
-              <div id="shoppingcart-checkout-button">
-                <button className="checkout-button">Check Out</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-}
-
-//SHOPPING CART - APP
-class Application extends React.Component {
-  constructor(){
-    super();
-    this.state = {
-      orderFade: '',
-      containerSlide: ''
-    }
+    grossFormat = Math.abs(gross.toFixed(2));
+    taxFormat = Math.abs(tax.toFixed(2));
+    totalFormat = Math.abs(total.toFixed(2));
     
-    this.screenSwitch = this.screenSwitch.bind(this);
-  }
-  
-  screenSwitch(x){
-    if(x == 1){
-      this.setState({
-        orderFade: 'order-container-fade',
-        containerSlide: 'screen-swipe'
-      })
-    }if(x == 2){
-      this.setState({
-        orderFade: '',
-        containerSlide: ''
-      })
-    }
+    itemsArray.splice(index, 1);
+    
+    this.setState({
+      items: this.state.items - 1
+    });
   }
   
   render(){
     return(
       <div id="app-container">
         <div id="app-container-inside" className={this.state.containerSlide}>
-          <OrderScreen applicationScreenSwitch={this.screenSwitch} applicationClass={this.state.orderFade}/>
-          <CheckOut applicationScreenSwitch={this.screenSwitch}/>
+          <OrderScreen applicationScreenSwitch={this.screenSwitch} applicationClass={this.state.orderFade} applicationClick={this.applicationClick} applicationClickedIndex={this.state.clickedIndex} applicationIsClicked={this.state.clicked}/>
+          <CheckOut applicationScreenSwitch={this.screenSwitch} applicationRemoveClick={this.removeClick}/>
         </div>
       </div>
     )
