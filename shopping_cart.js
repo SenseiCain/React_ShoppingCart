@@ -129,7 +129,7 @@ class ProductCard extends React.Component {
                       <SizeButton productCardIsClicked={this.props.productsIsClicked} productCardClickedIndex={this.props.productsClickedIndex} productCardSize="Large" value={value}/>
                     </div>
                 <div className="product-checkout">
-                  <AddToCartButton productCardClick={this.props.productsClick} productCardPrice={this.props.productsPrice} productCardIndex={this.props.value} buttonName={this.props.name}/>
+                  <AddToCartButton productCardClick={this.props.productsClick} productCardPrice={this.props.productsPrice} productCardIndex={this.props.value} productCardName={this.props.name}/>
                 </div>
               </div>
             </div>
@@ -232,7 +232,8 @@ class OrderScreen extends React.Component {
       //UPDATE SHOPING CART
       itemsArray.push({
         itemType: item,
-        size: selectedSize
+        size: selectedSize,
+        price: amount
       });
     }
     
@@ -259,8 +260,29 @@ class OrderScreen extends React.Component {
 }
 
 //SHOPPING CART - CHECK OUT
+class ItemRow extends React.Component {
+  render(){
+    return(
+      <tr>
+        <td data-title="name">{this.props.checkOutName}</td>
+        <td data-title="size">{this.props.checkOutSize}</td>
+        <td data-title="price">{this.props.checkOutPrice}</td>
+        <td data-title="remove">
+          <button class="remove-button">-</button>
+        </td>
+      </tr>
+    )
+  }
+}
+
 class CheckOut extends React.Component {
   render(){
+    var tableRows = Object.keys(itemsArray).map((key, i) => {
+      console.log(itemsArray);
+      
+      return(<ItemRow checkOutName={itemsArray[i].itemType} checkOutSize={itemsArray[i].size.charAt(0)} checkOutPrice={itemsArray[i].price}/>)
+    })
+    
     return(
       <div id="checkout-container">
         <div id="checkout-container-wrapper">
@@ -268,10 +290,24 @@ class CheckOut extends React.Component {
             <div id="back-button-container">
             <button className="checkout-button" onClick={this.props.applicationScreenSwitch.bind(this, 2)}>Back</button>
             </div>
-            <div id="shoppingcart-list-container"></div>
+            <div id="shoppingcart-list-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Size</th>
+                    <th>Price</th>
+                    <th>Remove</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tableRows}
+                </tbody>
+              </table>
+            </div>
             <div id="shoppingcart-checkout-container">
               <div id="shoppingcart-total">
-                <h2>Total: </h2>
+                <h2>Total: {totalFormat}</h2>
               </div>
               <div id="shoppingcart-checkout-button">
                 <button className="checkout-button">Check Out</button>
